@@ -1,0 +1,95 @@
+import tkinter as tk
+from tkinter import messagebox
+
+# Data minuman + harga
+data_minuman = {
+    "Cola": 5000,
+    "Sprite": 5000,
+    "Fanta": 5000,
+    "Badak": 7000,
+    "Pepsi": 6000
+}
+
+saldo = 0  # awal kosong
+
+# Fungsi set saldo
+def set_saldo():
+    global saldo
+    try:
+        saldo = int(entry_saldo.get())
+        saldo_var.set(f"Saldo: Rp {saldo}")
+    except:
+        messagebox.showerror("Error", "Masukkan angka yang valid!")
+
+# Fungsi beli
+def beli_minuman():
+    global saldo
+    minuman = pilihan_minuman.get()
+    metode = metode_bayar.get()
+
+    if minuman == "" or metode == "":
+        messagebox.showwarning("Error", "Pilih minuman dan metode pembayaran dulu!")
+        return
+
+    harga = data_minuman[minuman]
+
+    if saldo < harga:
+        messagebox.showerror("Gagal", "Saldo tidak cukup!")
+        return
+
+    saldo -= harga
+    saldo_var.set(f"Saldo: Rp {saldo}")
+
+    hasil.set(f"""
+🥤 Minuman: {minuman}
+💰 Harga: Rp {harga}
+💳 Pembayaran: {metode}
+
+✅ Berhasil!
+Sisa saldo: Rp {saldo}
+""")
+
+# Setup window
+root = tk.Tk()
+root.title("Vending Machine Minuman")
+root.geometry("420x450")
+
+# Judul
+tk.Label(root, text="🥤 VENDING MACHINE 🥤", font=("Arial", 14, "bold")).pack(pady=10)
+
+# Input saldo
+tk.Label(root, text="Masukkan Saldo (Rp):").pack()
+entry_saldo = tk.Entry(root)
+entry_saldo.pack(pady=5)
+
+tk.Button(root, text="Set Saldo", command=set_saldo).pack(pady=5)
+
+# Tampilan saldo
+saldo_var = tk.StringVar()
+saldo_var.set("Saldo: Rp 0")
+tk.Label(root, textvariable=saldo_var, font=("Arial", 12, "bold"), fg="green").pack(pady=5)
+
+# Pilih minuman
+tk.Label(root, text="Pilih Minuman:").pack()
+pilihan_minuman = tk.StringVar()
+menu = tk.OptionMenu(root, pilihan_minuman, *data_minuman.keys())
+menu.pack(pady=5)
+
+# Metode pembayaran
+tk.Label(root, text="Metode Pembayaran:").pack()
+metode_bayar = tk.StringVar()
+
+tk.Radiobutton(root, text="Cash 💵", variable=metode_bayar, value="Cash").pack()
+tk.Radiobutton(root, text="QRIS 📱", variable=metode_bayar, value="QRIS").pack()
+tk.Radiobutton(root, text="E-Wallet 💳", variable=metode_bayar, value="E-Wallet").pack()
+
+# Tombol beli
+tk.Button(root, text="Beli Sekarang", command=beli_minuman).pack(pady=10)
+
+# Output hasil
+hasil = tk.StringVar()
+tk.Label(root, textvariable=hasil, justify="left").pack(pady=10)
+
+# Run
+root.mainloop()
+
